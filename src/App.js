@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import { fetchData } from './Api'
+import './App.css'
+import CitySelector from './Components/CitySelector'
+import { Col, Container, Row } from 'react-bootstrap'
+import WeatherList from './Components/WeatherList'
 
-function App() {
+const App = () => {
+  const [query, setQuery] = useState('')
+  const [weatherData, setWeatherData] = useState([])
+  
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      setWeatherData(await fetchData(query))
+    }
+    fetchApi()
+  }, [query])
+  console.log(weatherData)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Container className='App'>
+        <CitySelector
+          getQuery={(q) => {
+            setQuery(q)
+          }}
+        />
+      </Container>
+      <Row>
+        {weatherData &&
+          weatherData?.map((w, i) => (
+            <Col md={5} xl={2} key={i}>
+              <WeatherList weathers={w} />
+            </Col>
+          ))}
+      </Row>
+    </>
+  )
 }
 
-export default App;
+export default App
